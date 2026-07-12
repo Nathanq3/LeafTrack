@@ -116,3 +116,113 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 20px 0; }
 .connected-account { box-shadow: 0 0 0 2px rgba(126, 157, 90, .18); }
 .signed-in-status { color: #9fc87d !important; font-weight: 800; }
 body:not(.dark) .signed-in-status { color: #42672f !important; }
+
+
+/* GitHub release update checker */
+.update-card {
+  border-color: var(--border-soft);
+}
+
+.update-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.update-grid > div {
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 13px;
+}
+
+.update-label {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.update-status {
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-weight: 700;
+  border: 1px solid var(--border);
+}
+
+.update-status.neutral {
+  background: var(--surface-strong);
+}
+
+.update-status.good {
+  background: #edf5dd;
+  border-color: #bdd39d;
+  color: #34452b;
+}
+
+body.dark .update-status.good {
+  background: #293522;
+  border-color: #60764f;
+  color: #dcedc9;
+}
+
+.update-status.warn {
+  background: #fff3cf;
+  border-color: #e5ca73;
+  color: #5f4a0b;
+}
+
+body.dark .update-status.warn {
+  background: #3b321b;
+  border-color: #7d692f;
+  color: #f4dfa1;
+}
+
+.update-status.error {
+  background: #fde7e4;
+  border-color: #e3a49c;
+  color: #7c2920;
+}
+
+body.dark .update-status.error {
+  background: #3b2422;
+  border-color: #7f4b46;
+  color: #f1c3bd;
+}
+
+.update-available {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid #e5ca73;
+  background: color-mix(in srgb, var(--surface-strong) 82%, #ffe59a);
+}
+
+.release-notes {
+  white-space: pre-wrap;
+  line-height: 1.5;
+  color: var(--text);
+  margin: 10px 0 14px;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.button-link {
+  display: inline-block;
+  padding: 11px 16px;
+  border-radius: 12px;
+  background: var(--primary);
+  color: #fff;
+  text-decoration: none;
+}
+
+.button-link:hover {
+  background: var(--primary-hover);
+}
+
+@media (max-width: 760px) {
+  .update-grid {
+    grid-template-columns: 1fr;
+  }
+}

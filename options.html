@@ -9,7 +9,6 @@
   <main class="app-shell">
     <header class="hero">
       <div>
-        <p class="eyebrow">LeafTrack v4.0</p>
         <h1>🍃 LeafTrack Dashboard</h1>
         <p class="subtle">Save applications, sync Gmail updates, and track every stage.</p>
       </div>
@@ -22,6 +21,44 @@
         <button id="signOut" class="secondary" hidden>Sign out</button>
       </div>
     </header>
+
+    <section id="updateCard" class="card update-card">
+      <div class="section-header">
+        <div>
+          <h2>⬆️ LeafTrack Updates</h2>
+          <p class="hint">Checks the latest public release from Nathanq3/LeafTrack.</p>
+        </div>
+        <button id="checkForUpdates" class="secondary" type="button">Check for Updates</button>
+      </div>
+
+      <div class="update-grid">
+        <div>
+          <span class="update-label">Installed version</span>
+          <strong id="installedVersion">—</strong>
+        </div>
+        <div>
+          <span class="update-label">Latest version</span>
+          <strong id="latestVersion">Not checked</strong>
+        </div>
+        <div>
+          <span class="update-label">Last checked</span>
+          <strong id="updateLastChecked">Not checked</strong>
+        </div>
+      </div>
+
+      <div id="updateStatus" class="update-status neutral">
+        Checking for updates…
+      </div>
+
+      <div id="updateAvailablePanel" class="update-available" hidden>
+        <h3>Update available</h3>
+        <div id="updateReleaseNotes" class="release-notes"></div>
+        <a id="downloadUpdate" class="button-link" href="#" target="_blank" rel="noopener">
+          Open Latest Release
+        </a>
+      </div>
+    </section>
+
 
     <section class="grid cards">
       <article class="card compact-card">

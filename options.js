@@ -1,3 +1,90 @@
+
+const LEAFTRACK_GITHUB_RELEASES_URL =
+  "https://github.com/Nathanq3/LeafTrack/releases/latest";
+
+function formatUpdateCheckTime(value) {
+  if (!value) return "Not checked";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Not checked";
+  return date.toLocaleString();
+}
+
+function renderReleaseNotes(body) {
+  const notes = String(body || "").trim();
+  return notes || "No release notes were provided.";
+}
+
+function applyUpdateResult(result) {
+  const installed = document.getElementById("installedVersion");
+  const latest = document.getElementById("latestVersion");
+  const checked = document.getElementById("updateLastChecked");
+  const status = document.getElementById("updateStatus");
+  const panel = document.getElementById("updateAvailablePanel");
+  const notes = document.getElementById("updateReleaseNotes");
+  const link = document.getElementById("downloadUpdate");
+
+  if (!status) return;
+
+  installed.textContent = `v${result.currentVersion || chrome.runtime.getManifest().version}`;
+  latest.textContent = result.latestVersion ? `v${result.latestVersion}` : "Unavailable";
+  checked.textContent = formatUpdateCheckTime(result.checkedAt);
+
+  status.className = "update-status";
+  panel.hidden = true;
+
+  if (result.error) {
+    status.classList.add("error");
+    status.textContent = result.error;
+    return;
+  }
+
+  if (result.updateAvailable) {
+    status.classList.add("warn");
+    status.textContent = `LeafTrack v${result.latestVersion} is available.`;
+    notes.textContent = renderReleaseNotes(result.releaseNotes);
+    link.href = result.releaseUrl || LEAFTRACK_GITHUB_RELEASES_URL;
+    panel.hidden = false;
+    return;
+  }
+
+  status.classList.add("good");
+  status.textContent = "✓ LeafTrack is up to date.";
+}
+
+async function checkForLeafTrackUpdates(force = false) {
+  const button = document.getElementById("checkForUpdates");
+  const status = document.getElementById("updateStatus");
+
+  if (button) button.disabled = true;
+  if (status) {
+    status.className = "update-status neutral";
+    status.textContent = "Checking GitHub Releases…";
+  }
+
+  try {
+    const response = await chrome.runtime.sendMessage({
+      type: "CHECK_FOR_UPDATES",
+      force
+    });
+
+    if (!response?.ok) {
+      throw new Error(response?.error || "Update check failed.");
+    }
+
+    applyUpdateResult(response.result);
+    return response.result;
+  } catch (error) {
+    applyUpdateResult({
+      currentVersion: chrome.runtime.getManifest().version,
+      checkedAt: new Date().toISOString(),
+      error: `Could not check for updates: ${error.message || error}`
+    });
+    return null;
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
 function parseCommaList(value) {
   return value.split(",").map(v => v.trim()).filter(Boolean);
 }
@@ -423,6 +510,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       autoRefreshRunning = false;
     }
   }
+
+  document.getElementById("installedVersion").textContent =
+    `v${chrome.runtime.getManifest().version}`;
+
+  document.getElementById("checkForUpdates")?.addEventListener("click", () => {
+    checkForLeafTrackUpdates(true);
+  });
+
+  checkForLeafTrackUpdates(false).catch(error => {
+    logDebug(`Initial update check failed: ${error}`);
+  });
 
   logDebug("LeafTrack v4 UI loaded.");
 

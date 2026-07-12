@@ -1,7 +1,132 @@
 importScripts("shared.js");
 
+
+const LEAFTRACK_UPDATE_ALARM = "leafTrackUpdateCheck";
+const LEAFTRACK_RELEASE_API =
+  "https://api.github.com/repos/Nathanq3/LeafTrack/releases/latest";
+const LEAFTRACK_RELEASES_PAGE =
+  "https://github.com/Nathanq3/LeafTrack/releases/latest";
+const LEAFTRACK_UPDATE_CACHE_MS = 30 * 60 * 1000;
+
+function normalizeVersion(version) {
+  return String(version || "")
+    .trim()
+    .replace(/^v/i, "")
+    .split("-")[0];
+}
+
+function compareVersions(left, right) {
+  const a = normalizeVersion(left).split(".").map(value => Number(value) || 0);
+  const b = normalizeVersion(right).split(".").map(value => Number(value) || 0);
+  const length = Math.max(a.length, b.length);
+
+  for (let index = 0; index < length; index++) {
+    const difference = (a[index] || 0) - (b[index] || 0);
+    if (difference !== 0) return difference;
+  }
+
+  return 0;
+}
+
+async function setUpdateBadge(updateAvailable) {
+  await chrome.action.setBadgeText({
+    text: updateAvailable ? "1" : ""
+  });
+
+  if (updateAvailable) {
+    await chrome.action.setBadgeBackgroundColor({
+      color: "#6f8454"
+    });
+  }
+}
+
+async function checkGitHubRelease(force = false) {
+  const currentVersion = chrome.runtime.getManifest().version;
+  const cached = await chrome.storage.local.get(["leafTrackUpdateResult"]);
+  const prior = cached.leafTrackUpdateResult;
+
+  if (
+    !force &&
+    prior?.checkedAt &&
+    Date.now() - new Date(prior.checkedAt).getTime() < LEAFTRACK_UPDATE_CACHE_MS
+  ) {
+    await setUpdateBadge(Boolean(prior.updateAvailable));
+    return prior;
+  }
+
+  const checkedAt = new Date().toISOString();
+
+  try {
+    const response = await fetch(LEAFTRACK_RELEASE_API, {
+      headers: {
+        Accept: "application/vnd.github+json"
+      },
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error(
+          "No public GitHub release was found. Make sure the repository is public and a release is published."
+        );
+      }
+
+      throw new Error(`GitHub returned HTTP ${response.status}.`);
+    }
+
+    const release = await response.json();
+    const latestVersion = normalizeVersion(release.tag_name);
+    const updateAvailable =
+      compareVersions(latestVersion, currentVersion) > 0;
+
+    const result = {
+      currentVersion,
+      latestVersion,
+      updateAvailable,
+      releaseNotes: release.body || "",
+      releaseUrl: release.html_url || LEAFTRACK_RELEASES_PAGE,
+      releaseName: release.name || release.tag_name || "",
+      checkedAt
+    };
+
+    await chrome.storage.local.set({
+      leafTrackUpdateResult: result
+    });
+
+    await setUpdateBadge(updateAvailable);
+    return result;
+  } catch (error) {
+    const result = {
+      currentVersion,
+      latestVersion: prior?.latestVersion || "",
+      updateAvailable: Boolean(prior?.updateAvailable),
+      releaseNotes: prior?.releaseNotes || "",
+      releaseUrl: prior?.releaseUrl || LEAFTRACK_RELEASES_PAGE,
+      checkedAt,
+      error: error.message || String(error)
+    };
+
+    await chrome.storage.local.set({
+      leafTrackUpdateResult: result
+    });
+
+    await setUpdateBadge(Boolean(result.updateAvailable));
+    return result;
+  }
+}
+
+async function configureUpdateAlarm() {
+  chrome.alarms.create(LEAFTRACK_UPDATE_ALARM, {
+    delayInMinutes: 1,
+    periodInMinutes: 12 * 60
+  });
+}
+
+
 chrome.runtime.onInstalled.addListener(async () => {
   await updateGmailAlarm();
+  await configureUpdateAlarm();
+  await checkGitHubRelease(true);
 });
 
 
@@ -9,10 +134,28 @@ chrome.runtime.onStartup.addListener(() => {
   updateGmailAlarm().catch(error => {
     console.error("Could not restore Gmail alarm on startup:", error);
   });
+
+  configureUpdateAlarm().catch(error => {
+    console.error("Could not restore update alarm:", error);
+  });
+
+  checkGitHubRelease(false).catch(error => {
+    console.error("Could not check LeafTrack updates on startup:", error);
+  });
 });
 
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "CHECK_FOR_UPDATES") {
+    checkGitHubRelease(Boolean(message.force))
+      .then(result => sendResponse({ ok: !result.error, result, error: result.error }))
+      .catch(error => {
+        console.error("LeafTrack update check failed:", error);
+        sendResponse({ ok: false, error: String(error) });
+      });
+    return true;
+  }
+
   if (message.type === "UPDATE_GMAIL_ALARM") {
     updateGmailAlarm()
       .then(() => sendResponse({ ok: true }))
@@ -87,6 +230,15 @@ chrome.alarms.onAlarm.addListener(async alarm => {
       await runGmailSync(false);
     } catch (error) {
       console.error("Gmail sync failed", error);
+    }
+    return;
+  }
+
+  if (alarm.name === LEAFTRACK_UPDATE_ALARM) {
+    try {
+      await checkGitHubRelease(true);
+    } catch (error) {
+      console.error("LeafTrack update check failed:", error);
     }
   }
 });
