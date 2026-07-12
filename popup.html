@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="topbar">
+    <h2>LeafTrack</h2>
+    <button id="settings" title="Settings">Settings</button>
+  </div>
+
+  <div id="setupWarning" class="warning" hidden>
+    Connect Google Sheets in settings first.
+  </div>
+
+  <label>Job Title</label>
+  <input id="jobTitle">
+
+  <label>Company</label>
+  <input id="company">
+
+  <label>Salary</label>
+  <input id="salary" placeholder="$25/hr or $60,000/year">
+
+  <label>Location</label>
+  <input id="location">
+
+  <label>Sheet Tab</label>
+  <select id="sheet"></select>
+
+  <label>Resume Used</label>
+  <select id="resumeUsed"></select>
+
+  <label>Notes</label>
+  <textarea id="notes"></textarea>
+
+  <button id="save">Save Job</button>
+  <button id="openSheet" class="secondary-button">Open Spreadsheet</button>
+  <p id="status"></p>
+
+  <div id="duplicateModal" class="modal-backdrop" hidden aria-modal="true" role="dialog" aria-labelledby="duplicateTitle">
+    <div class="modal-card duplicate-card">
+      <div class="duplicate-heading">
+        <div class="duplicate-icon" aria-hidden="true">!</div>
+        <div>
+          <h3 id="duplicateTitle">Application already exists</h3>
+          <p class="duplicate-subtitle">This application appears to already be in your tracker.</p>
+        </div>
+      </div>
+
+      <div id="duplicateDetails" class="duplicate-details"></div>
+
+      <div class="modal-actions">
+        <button id="openDuplicate" class="modal-action open-action" type="button">
+          <span class="action-icon" aria-hidden="true">↗</span>
+          <span><strong>Open Existing</strong><small>View the saved row in Google Sheets</small></span>
+        </button>
+        <button id="saveDuplicateAnyway" class="modal-action save-action" type="button">
+          <span class="action-icon" aria-hidden="true">＋</span>
+          <span><strong>Save Anyway</strong><small>Create another application entry</small></span>
+        </button>
+        <button id="cancelDuplicate" class="modal-action cancel-action" type="button">
+          <span class="action-icon" aria-hidden="true">×</span>
+          <span><strong>Cancel</strong><small>Return and edit the application</small></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="shared.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

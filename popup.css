@@ -1,0 +1,295 @@
+body {
+  font-family: Arial, sans-serif;
+  width: 330px;
+  padding: 14px;
+  background: #F5F1E8;
+  color: #3E3A36;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+h2 {
+  margin: 0 0 10px;
+  color: #4F5D3A;
+}
+
+#settings {
+  width: auto;
+  margin: 0;
+  padding: 6px 10px;
+  background: #D8C3A5;
+  color: #3E3A36;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.warning {
+  background: #EFE0C8;
+  border: 1px solid #C8B79C;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+label {
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 10px;
+  display: block;
+  color: #5C4A3D;
+}
+
+input, select, textarea {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 4px;
+  padding: 8px;
+  border: 1px solid #C8B79C;
+  border-radius: 8px;
+  background: #FCFAF5;
+  color: #3E3A36;
+}
+
+textarea {
+  height: 70px;
+}
+
+button {
+  width: 100%;
+  margin-top: 14px;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  background: #7A8F63;
+  color: white;
+}
+
+button:hover {
+  background: #667952;
+}
+
+#status {
+  font-size: 12px;
+  margin-top: 10px;
+  color: #6B5E4E;
+}
+
+
+.secondary-button {
+  background: #D8C3A5;
+  color: #3E3A36;
+}
+.secondary-button:hover { background: #C8B18E; }
+.danger-button { background: #A85D52; }
+.danger-button:hover { background: #8D4C43; }
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(45, 42, 38, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 9999;
+}
+.modal-backdrop[hidden] { display: none; }
+.modal-card {
+  width: 100%;
+  background: #FCFAF5;
+  border: 1px solid #C8B79C;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 12px 32px rgba(0,0,0,.22);
+}
+.modal-card h3 { margin: 0 0 8px; color: #4F5D3A; }
+.modal-card p { font-size: 13px; line-height: 1.45; white-space: pre-line; }
+.modal-actions { display: grid; gap: 8px; }
+.modal-actions button { margin-top: 0; }
+
+
+/* Polished duplicate warning */
+.modal-backdrop {
+  background: rgba(38, 39, 34, 0.62);
+  backdrop-filter: blur(2px);
+}
+.duplicate-card {
+  padding: 18px;
+  border: 1px solid #d5c7ac;
+  border-radius: 18px;
+  background: #fffdf8;
+  box-shadow: 0 18px 50px rgba(39, 42, 33, 0.28);
+}
+.duplicate-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.duplicate-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  flex: 0 0 42px;
+  display: grid;
+  place-items: center;
+  background: #eaf1df;
+  color: #476037;
+  font-size: 24px;
+  font-weight: 900;
+}
+.duplicate-card h3 {
+  margin: 1px 0 4px;
+  font-size: 17px;
+  color: #34452b;
+}
+.duplicate-subtitle {
+  margin: 0;
+  color: #6b675f;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.duplicate-details {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 12px;
+  border: 1px solid #dce5d1;
+  border-radius: 12px;
+  background: #f5f8f0;
+}
+.duplicate-detail-row {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.35;
+}
+.duplicate-detail-label {
+  color: #536348;
+  font-weight: 800;
+}
+.duplicate-detail-value {
+  color: #403d38;
+  overflow-wrap: anywhere;
+}
+.modal-actions { gap: 8px; }
+.modal-actions .modal-action {
+  width: 100%;
+  margin: 0;
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: 12px;
+}
+.modal-action .action-icon {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  font-size: 18px;
+  font-weight: 900;
+}
+.modal-action strong, .modal-action small { display: block; }
+.modal-action strong { font-size: 13px; }
+.modal-action small { margin-top: 2px; font-size: 10px; font-weight: 500; opacity: .78; }
+.open-action { background: #fff; color: #36502e; border-color: #9db58b !important; }
+.open-action:hover { background: #f4f8ef; }
+.open-action .action-icon { background: #4f743f; color: #fff; }
+.save-action { background: #edf4e5; color: #36502e; border-color: #ccdbc0 !important; }
+.save-action:hover { background: #e3eed9; }
+.save-action .action-icon { background: #64864f; color: #fff; }
+.cancel-action { background: #fff1ef; color: #9c3d34; border-color: #efc2bd !important; }
+.cancel-action:hover { background: #ffe7e3; }
+.cancel-action .action-icon { background: #bd5147; color: #fff; }
+
+#salary::placeholder { color: #9a8d7c; }
+
+
+/* Dark mode for Save Job popup */
+html.dark-mode,
+body.dark-mode {
+  color-scheme: dark;
+  background: #171d16;
+  color: #eef3e6;
+}
+
+body.dark-mode,
+body.dark-mode .popup-shell,
+body.dark-mode main,
+body.dark-mode section,
+body.dark-mode .card,
+body.dark-mode .panel,
+body.dark-mode .modal-card,
+body.dark-mode .duplicate-dialog,
+body.dark-mode .duplicate-card {
+  background: #222b20;
+  color: #eef3e6;
+  border-color: #46533f;
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode label,
+body.dark-mode .brand,
+body.dark-mode .title {
+  color: #eef3e6;
+}
+
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea {
+  background: #171d16;
+  color: #f5f7f1;
+  border-color: #5b6853;
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+  color: #aab4a2;
+}
+
+body.dark-mode button.secondary,
+body.dark-mode .secondary,
+body.dark-mode .settings-button,
+body.dark-mode #settings {
+  background: #4a5544;
+  color: #ffffff;
+  border-color: #64705d;
+}
+
+body.dark-mode .hint,
+body.dark-mode .muted,
+body.dark-mode .status-text,
+body.dark-mode small {
+  color: #c4ccb9;
+}
+
+body.dark-mode .duplicate-details,
+body.dark-mode .duplicate-info,
+body.dark-mode .info-box {
+  background: #1a2119;
+  border-color: #4d5b47;
+  color: #e7ecdf;
+}
+
+body.dark-mode a {
+  color: #c7e29c;
+}
+
+body.dark-mode .modal-overlay {
+  background: rgba(0, 0, 0, 0.72);
+}

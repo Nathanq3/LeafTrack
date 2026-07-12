@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">LeafTrack v4.0</p>
+        <h1>🍃 LeafTrack Dashboard</h1>
+        <p class="subtle">Save applications, sync Gmail updates, and track every stage.</p>
+      </div>
+      <div class="hero-actions">
+        <label class="theme-control" title="Switch appearance">
+          <span>🌙 Dark mode</span>
+          <input type="checkbox" id="themeToggle">
+        </label>
+        <button id="signIn">Sign in with Google</button>
+        <button id="signOut" class="secondary" hidden>Sign out</button>
+      </div>
+    </header>
+
+    <section class="grid cards">
+      <article class="card compact-card">
+        <h2>Google Account</h2>
+        <div id="signedInBox" class="status-card" hidden>
+          <span class="dot good"></span>
+          <div>
+            <span class="account-label">LeafTrack account</span>
+            <strong id="signedInEmail"></strong>
+          </div>
+        </div>
+        <p id="signInStatus" class="status-text">Checking LeafTrack sign-in…</p>
+      </article>
+
+      <article class="card compact-card">
+        <h2>Spreadsheet</h2>
+        <p id="sheetStatus" class="status-text">No spreadsheet status yet.</p>
+        <a id="sheetLink" href="#" target="_blank" hidden>Open connected spreadsheet</a>
+      </article>
+
+      <article class="card compact-card">
+        <h2>Gmail Sync</h2>
+        <label class="check">
+          <input type="checkbox" id="gmailSyncEnabled">
+          Auto scan Gmail every 3 hours
+        </label>
+        <p id="gmailStatus" class="status-text">Gmail sync not run yet.</p>
+      </article>
+    </section>
+
+    <section class="card">
+      <div class="section-header">
+        <div>
+          <h2>📊 Dashboard Stats</h2>
+          <p class="hint">Lifetime totals across your application stages.</p>
+        </div>
+        <button id="refreshStats" class="secondary">Refresh Stats</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-tile"><span>Applications</span><strong id="statTotal">0</strong></div>
+        <div class="stat-tile"><span>Applied</span><strong id="statApplied">0</strong></div>
+        <div class="stat-tile"><span>Pending</span><strong id="statPending">0</strong></div>
+        <div class="stat-tile"><span>Screening</span><strong id="statScreening">0</strong></div>
+        <div class="stat-tile"><span>Interview</span><strong id="statInterview">0</strong></div>
+        <div class="stat-tile"><span>Offers</span><strong id="statOffers">0</strong></div>
+        <div class="stat-tile"><span>Rejected</span><strong id="statRejected">0</strong></div>
+        <div class="stat-tile"><span>Response Rate</span><strong id="statResponseRate">0%</strong></div>
+      </div>
+
+      <div class="progress-stack">
+        <div><span>Response Rate</span><div class="progress-track"><div id="responseProgress" class="progress-fill"></div></div></div>
+        <div><span>Interview Rate</span><div class="progress-track"><div id="interviewProgress" class="progress-fill"></div></div></div>
+        <div><span>Offer Rate</span><div class="progress-track"><div id="offerProgress" class="progress-fill"></div></div></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>📄 Resume Analytics</h2>
+      <p class="hint">Shows which resume is getting interviews, offers, and rejections.</p>
+      <div id="resumeAnalytics" class="analytics-box">Connect a spreadsheet and click Refresh Stats.</div>
+    </section>
+
+    <section class="card">
+      <div class="section-header">
+        <div>
+          <h2>🕒 Application Timeline</h2>
+          <p class="hint">Search your applications and see salary plus status history.</p>
+        </div>
+        <button id="refreshTimeline" class="secondary">Refresh Timeline</button>
+      </div>
+
+      <div class="timeline-controls">
+        <div class="timeline-search-group">
+          <input id="timelineSearch" placeholder="Search company, job title, location, or salary">
+          <button id="timelineSearchButton" type="button">Search</button>
+          <button id="timelineClearButton" class="secondary" type="button">Clear</button>
+        </div>
+        <select id="timelineStatusFilter">
+          <option value="">All statuses</option>
+          <option value="Applied">Applied</option>
+          <option value="Pending">Pending</option>
+          <option value="Screening">Screening</option>
+          <option value="Assessment">Assessment</option>
+          <option value="Interview">Interview</option>
+          <option value="Offer Extended">Offer Extended</option>
+          <option value="Rejected">Rejected</option>
+          <option value="Closed">Closed</option>
+        </select>
+        <select id="timelineResumeFilter"><option value="">All resumes</option></select>
+      </div>
+
+      <div id="timelineList" class="timeline-list">Connect a spreadsheet and click Refresh Timeline.</div>
+    </section>
+
+    <section class="card">
+      <h2>Resume Names</h2>
+      <p class="hint">These show up in the popup so each saved job records which resume you used.</p>
+      <textarea id="resumeNames" placeholder="Add one resume name per line"></textarea>
+      <button id="saveResumes">Save Resume List</button>
+      <p id="resumeStatus" class="status-text"></p>
+    </section>
+
+    <section class="card">
+      <h2>Quick Actions</h2>
+      <div class="button-row">
+        <button id="saveGmailSync">Save Gmail Sync Setting</button>
+        <button id="runGmailSync">Run Gmail Sync Now</button>
+        <button id="formatCurrentTracker" class="secondary">Format Current Spreadsheet</button>
+      </div>
+      <p id="developerStatus" class="status-text"></p>
+    </section>
+
+    <details id="advancedSettings" class="advanced-panel">
+      <summary>
+        <span>⚙️ Advanced Settings</span>
+        <small>Spreadsheet connection, tester, and debug tools</small>
+      </summary>
+      <div class="advanced-content">
+        <section class="card">
+          <h2>Tracker Spreadsheet</h2>
+          <label>Tab names</label>
+          <p class="hint">Use one tab or multiple tabs. Separate names with commas.</p>
+          <input id="tabNames" value="Applications">
+          <div class="button-row">
+            <button id="createTracker">Create New LeafTrack Spreadsheet</button>
+            <button id="changeSpreadsheet" class="secondary">Change Connected Spreadsheet</button>
+          </div>
+          <hr>
+          <label>Or connect existing Spreadsheet ID</label>
+          <input id="spreadsheetId" placeholder="Paste spreadsheet ID from Google Sheets URL">
+          <button id="connectTracker" class="secondary">Connect Existing Spreadsheet</button>
+        </section>
+
+        <section class="card developer-card">
+          <h2>🧪 Email Match Tester</h2>
+          <p class="hint">Simulate rejection, screening, interview, or offer emails without reading Gmail.</p>
+          <div class="grid two">
+            <div><label>Company</label><input id="simCompany" placeholder="Example: Microsoft"></div>
+            <div><label>Job Title</label><input id="simTitle" placeholder="Example: IT Support Intern"></div>
+          </div>
+          <label>Email Type</label>
+          <select id="simType">
+            <option value="rejection">Rejection</option>
+            <option value="interview">Interview</option>
+            <option value="screening">Screening</option>
+            <option value="offer">Offer</option>
+          </select>
+          <label>Generated Email Preview</label>
+          <textarea id="simEmailBody"></textarea>
+          <div class="button-row">
+            <button id="generateSimEmail" class="secondary">Generate Preview</button>
+            <button id="simulateRejection">Test Match / Apply Update</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>🐞 Debug Log</h2>
+          <textarea id="debugLog" readonly class="debug-log"></textarea>
+        </section>
+
+        <section class="card">
+          <h2>PDF Setup</h2>
+          <p>Chrome cannot choose your PDF folder directly. Set your save folder in PDF-XChange Lite AutoSave.</p>
+          <a href="https://www.pdf-xchange.com/product/pdf-xchange-lite" target="_blank">Open PDF-XChange Lite download page</a>
+        </section>
+      </div>
+    </details>
+  </main>
+  <script src="shared.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
