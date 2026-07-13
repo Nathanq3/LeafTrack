@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "LeafTrack",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxlkDFBoDNzArhubrw2kxVDLqmMzN6Wml4tN4/WH+eKacHIdiUkJh7M5mONNqH+PgmtS9S5ZsGAeT8IPxvpS2xZ5SMqZmIBr6mFgWWEcKMq0DLiKeacgdZ/LLpvkVO1Y1bHavJGyoCt8UqUFZGaoFm8ZtuDD7WfziwE9i8zq2n/lu+XSTOoG9dxjh3l/R1Wi/YuqU9KzGESq8tlNA21Jo1IBT5mVKBQu3pD3CO731hGYUJ9ZWQy/czVYnNtjycPf9jvXecnHPhASeEp1avOF4HpzCk0OadaT9eAGklbalDxaN7O3cR+dg4rfg9OxYZ3eyX82m0b56lQRelbTAXjT9eQIDAQAB",
-  "version": "3.1.3",
+  "version": "3.1.4",
   "description": "Save job applications, detect salary, prevent duplicates, search timelines, and sync Gmail status updates.",
   "permissions": [
     "identity",
