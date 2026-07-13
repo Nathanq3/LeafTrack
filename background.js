@@ -253,12 +253,23 @@ async function updateGmailAlarm() {
   }
 }
 
-function chooseStatusColumn(secondaryStatus, thirdStatus) {
+function chooseStatusColumn(
+  initialStatus,
+  secondaryStatus,
+  thirdStatus,
+  initialCol,
+  secondaryCol,
+  thirdCol
+) {
+  const initial = normalizeText(initialStatus || "");
   const secondary = normalizeText(secondaryStatus || "");
   const third = normalizeText(thirdStatus || "");
 
-  if (!secondary || secondary === "pending") return "H";
-  if (!third || third === "pending") return "I";
+  // Use the actual header positions instead of hard-coded letters.
+  // This keeps the logic correct when columns such as Salary are moved.
+  if (!initial || initial === "pending") return columnLetter(initialCol + 1);
+  if (!secondary || secondary === "pending") return columnLetter(secondaryCol + 1);
+  if (!third || third === "pending") return columnLetter(thirdCol + 1);
 
   return null;
 }
@@ -450,9 +461,10 @@ async function updateMatchingRowsForEmail(settings, emailText, interactive, opti
     const headers = rows[11] || [];
     const titleCol = headers.indexOf("Job Title");
     const companyCol = headers.indexOf("Company");
+    const initialCol = headers.indexOf("Initial Status");
     const secondaryCol = headers.indexOf("Secondary Status");
     const thirdCol = headers.indexOf("Third Status");
-    if ([titleCol, companyCol, secondaryCol, thirdCol].some(index => index === -1)) continue;
+    if ([titleCol, companyCol, initialCol, secondaryCol, thirdCol].some(index => index === -1)) continue;
 
     for (let i = 12; i < rows.length; i++) {
       const row = rows[i] || [];
@@ -464,7 +476,14 @@ async function updateMatchingRowsForEmail(settings, emailText, interactive, opti
       const titleResult = titleMatchScore(emailText, title);
       const domainResult = senderDomainScore(emailText, company);
       const score = companyResult.score + titleResult.score + domainResult.score;
-      const statusColumn = chooseStatusColumn(row[secondaryCol] || "", row[thirdCol] || "");
+      const statusColumn = chooseStatusColumn(
+        row[initialCol] || "",
+        row[secondaryCol] || "",
+        row[thirdCol] || "",
+        initialCol,
+        secondaryCol,
+        thirdCol
+      );
 
       candidates.push({
         tab, rowNumber: i + 1, title, company, score, statusColumn,
