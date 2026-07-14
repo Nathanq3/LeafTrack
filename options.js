@@ -42,7 +42,14 @@ function applyUpdateResult(result) {
     status.classList.add("warn");
     status.textContent = `LeafTrack v${result.latestVersion} is available.`;
     notes.textContent = renderReleaseNotes(result.releaseNotes);
-    link.href = result.releaseUrl || LEAFTRACK_GITHUB_RELEASES_URL;
+    link.href =
+      result.downloadUrl ||
+      result.releaseUrl ||
+      LEAFTRACK_GITHUB_RELEASES_URL;
+
+  link.textContent = result.assetName
+    ? `Download ${result.assetName}`
+    : "Open Latest Release";
     panel.hidden = false;
     return;
   }

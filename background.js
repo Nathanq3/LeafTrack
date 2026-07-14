@@ -75,6 +75,22 @@ async function checkGitHubRelease(force = false) {
     }
 
     const release = await response.json();
+
+    const downloadAsset = (release.assets || []).find(asset => {
+      const name = String(asset.name || "").toLowerCase();
+
+      return (
+        name.endsWith(".zip") ||
+        name.endsWith(".crx") ||
+        name.includes("leaftrack")
+      );
+    });
+
+    const downloadUrl =
+      downloadAsset?.browser_download_url ||
+      release.html_url ||
+      LEAFTRACK_RELEASES_PAGE;
+
     const latestVersion = normalizeVersion(release.tag_name);
     const updateAvailable =
       compareVersions(latestVersion, currentVersion) > 0;
@@ -85,6 +101,8 @@ async function checkGitHubRelease(force = false) {
       updateAvailable,
       releaseNotes: release.body || "",
       releaseUrl: release.html_url || LEAFTRACK_RELEASES_PAGE,
+      downloadUrl,
+      assetName: downloadAsset?.name || "",
       releaseName: release.name || release.tag_name || "",
       checkedAt
     };
