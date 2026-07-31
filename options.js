@@ -42,14 +42,7 @@ function applyUpdateResult(result) {
     status.classList.add("warn");
     status.textContent = `LeafTrack v${result.latestVersion} is available.`;
     notes.textContent = renderReleaseNotes(result.releaseNotes);
-    link.href =
-      result.downloadUrl ||
-      result.releaseUrl ||
-      LEAFTRACK_GITHUB_RELEASES_URL;
-
-  link.textContent = result.assetName
-    ? `Download ${result.assetName}`
-    : "Open Latest Release";
+    link.href = result.releaseUrl || LEAFTRACK_GITHUB_RELEASES_URL;
     panel.hidden = false;
     return;
   }
@@ -481,6 +474,32 @@ document.addEventListener("DOMContentLoaded", async () => {
     box.value += `[${time}] ${message}\n`;
     box.scrollTop = box.scrollHeight;
   }
+
+  const timelineList = document.getElementById("timelineList");
+  const toggleTimelineButton = document.getElementById("toggleTimeline");
+  const timelinePreference = await chrome.storage.sync.get([
+    "leafTrackTimelineCollapsed"
+  ]);
+
+  function applyTimelineState(collapsed) {
+    timelineList?.classList.toggle("collapsed", Boolean(collapsed));
+
+    if (toggleTimelineButton) {
+      toggleTimelineButton.textContent = collapsed
+        ? "Expand Timeline"
+        : "Collapse Timeline";
+    }
+  }
+
+  applyTimelineState(Boolean(timelinePreference.leafTrackTimelineCollapsed));
+
+  toggleTimelineButton?.addEventListener("click", async () => {
+    const collapsed = !timelineList?.classList.contains("collapsed");
+    applyTimelineState(collapsed);
+    await chrome.storage.sync.set({
+      leafTrackTimelineCollapsed: collapsed
+    });
+  });
 
   applyTheme(uiPreferences.leafTrackDarkMode);
   const advancedSettings = document.getElementById("advancedSettings");

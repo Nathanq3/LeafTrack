@@ -75,22 +75,6 @@ async function checkGitHubRelease(force = false) {
     }
 
     const release = await response.json();
-
-    const downloadAsset = (release.assets || []).find(asset => {
-      const name = String(asset.name || "").toLowerCase();
-
-      return (
-        name.endsWith(".zip") ||
-        name.endsWith(".crx") ||
-        name.includes("leaftrack")
-      );
-    });
-
-    const downloadUrl =
-      downloadAsset?.browser_download_url ||
-      release.html_url ||
-      LEAFTRACK_RELEASES_PAGE;
-
     const latestVersion = normalizeVersion(release.tag_name);
     const updateAvailable =
       compareVersions(latestVersion, currentVersion) > 0;
@@ -101,8 +85,6 @@ async function checkGitHubRelease(force = false) {
       updateAvailable,
       releaseNotes: release.body || "",
       releaseUrl: release.html_url || LEAFTRACK_RELEASES_PAGE,
-      downloadUrl,
-      assetName: downloadAsset?.name || "",
       releaseName: release.name || release.tag_name || "",
       checkedAt
     };
@@ -345,6 +327,11 @@ async function runGmailSync(interactive = true) {
     "OR \"position has been filled\"",
     "OR \"unable to offer\"",
     "OR \"schedule an interview\"",
+    "OR \"scheduled to meet\"",
+    "OR \"individual interview\"",
+    "OR \"zoom interview\"",
+    "OR \"interview appointment\"",
+    "OR \"can't wait to meet you\"",
     "OR \"interview invitation\"",
     "OR \"phone screen\"",
     "OR \"recruiter call\"",
@@ -504,8 +491,19 @@ async function updateMatchingRowsForEmail(settings, emailText, interactive, opti
       );
 
       candidates.push({
-        tab, rowNumber: i + 1, title, company, score, statusColumn,
-        reasons: [companyResult.reason, titleResult.reason, domainResult.reason]
+        tab,
+        rowNumber: i + 1,
+        title,
+        company,
+        score,
+        statusColumn,
+        companyMatched: companyResult.reason.includes("Company matched"),
+        senderMatched: domainResult.score > 0,
+        reasons: [
+          companyResult.reason,
+          titleResult.reason,
+          domainResult.reason
+        ]
       });
     }
   }
@@ -514,9 +512,39 @@ async function updateMatchingRowsForEmail(settings, emailText, interactive, opti
   const best = candidates[0];
   const runnerUp = candidates[1];
 
-  if (!best || best.score < 60) {
-    logs.push(`No confident match. Best score: ${best?.score || 0}/90.`);
+  if (!best) {
+    logs.push("No matching application rows were found.");
     return { updated: 0, logs };
+  }
+
+  // Recruiter emails often omit the exact spreadsheet job title.
+  // Allow a company-only fallback only when:
+  //   1. the company matched clearly,
+  //   2. sender/domain context also matched,
+  //   3. exactly one active row exists for that company, and
+  //   4. the email type was confidently classified.
+  const sameCompanyActiveRows = candidates.filter(candidate =>
+    candidate.companyMatched &&
+    candidate.senderMatched &&
+    candidate.statusColumn
+  );
+
+  const uniqueCompanyFallback =
+    best.score < 60 &&
+    best.companyMatched &&
+    best.senderMatched &&
+    sameCompanyActiveRows.length === 1;
+
+  if (best.score < 60 && !uniqueCompanyFallback) {
+    logs.push(`No confident match. Best score: ${best.score}/90.`);
+    return { updated: 0, logs };
+  }
+
+  if (uniqueCompanyFallback) {
+    logs.push(
+      `Used unique-company fallback for ${best.company}: ` +
+      `the recruiter email matched the company/domain and only one active application was found.`
+    );
   }
 
   if (runnerUp && best.score - runnerUp.score < 8 && options.source !== "simulator") {

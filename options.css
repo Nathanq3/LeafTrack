@@ -74,7 +74,27 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 20px 0; }
 .timeline-controls { display: grid; grid-template-columns: minmax(0, 2fr) 1fr 1fr; gap: 10px; margin: 14px 0; align-items: end; }
 .timeline-search-group { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; }
 .timeline-search-group button { width: auto; margin: 6px 0 0; white-space: nowrap; }
-.timeline-list { display: grid; gap: 14px; margin-top: 14px; }
+.timeline-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+  max-height: 650px;
+  overflow-y: auto;
+  padding-right: 8px;
+  scroll-behavior: smooth;
+}
+.timeline-list::-webkit-scrollbar { width: 10px; }
+.timeline-list::-webkit-scrollbar-track { background: var(--surface); border-radius: 999px; }
+.timeline-list::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 999px; }
+.timeline-list::-webkit-scrollbar-thumb:hover { background: var(--secondary-hover); }
+.timeline-list.collapsed { display: none; }
+.timeline-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.timeline-item { padding: 13px 16px; }
+.timeline-company { font-size: 18px; }
+.timeline-title { margin-top: 2px; }
+.timeline-salary { display: inline-flex; margin-top: 8px; }
+.timeline-meta { margin-top: 8px; }
+.timeline-path { margin-top: 10px; }
 .timeline-item { background: var(--surface-strong); border: 1px solid var(--border); border-radius: 16px; padding: 17px; box-shadow: 0 5px 14px rgba(42, 48, 37, .06); transition: transform .15s, box-shadow .15s, border-color .15s; }
 .timeline-item:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(42, 48, 37, .13); border-color: var(--border-soft); }
 .timeline-company { font-size: 17px; font-weight: 900; color: var(--heading); }
